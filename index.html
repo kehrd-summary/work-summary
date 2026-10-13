@@ -208,12 +208,14 @@ footer a{color:#fff}
    <option>과제 가이드</option>
    <option>여러 개 / 잘 모르겠음</option>
   </select>
+  <label for="file">과정개요서 첨부 (엑셀 .xlsx, 5MB 이하)</label>
+  <input id="file" name="file" type="file" accept=".xlsx">
   <label for="message">문의 내용</label>
   <textarea id="message" name="message" maxlength="900"></textarea>
   <div class="hp" aria-hidden="true"><label>비워 두세요<input name="website" tabindex="-1" autocomplete="off"></label></div>
   <button class="btn" id="send" type="submit">상담 신청 보내기</button>
   <div id="msg" role="status"></div>
-  <p class="privacy">입력하신 이름, 연락처, 문의 내용은 상담 연락 목적으로만 사용합니다.</p>
+  <p class="privacy">입력하신 이름, 연락처, 문의 내용과 첨부하신 파일은 상담과 자료 제작 목적으로만 사용합니다.</p>
  </form>
 </div></section>
 </main>
@@ -239,9 +241,19 @@ f.addEventListener("submit", function(e){
   var service = d.get("service") || "";
   var text = (d.get("message") || "").trim();
   var message = service ? "[" + service + "] " + text : text;
+  var fileEl = document.getElementById("file"), file = fileEl.files && fileEl.files[0];
+  if (file && !/\.xlsx$/i.test(file.name)){ show("엑셀(.xlsx) 파일만 첨부할 수 있습니다.", "err"); return; }
+  if (file && file.size > 5*1024*1024){ show("파일이 너무 큽니다. 5MB 이하로 올려 주세요.", "err"); return; }
   send.disabled = true; show("보내는 중입니다...");
-  var body = JSON.stringify({name:name, phone:phone, message:message, website:d.get("website")||""});
-  fetch(ENDPOINT, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:body})
+  var readFile = file ? new Promise(function(res, rej){
+    var fr = new FileReader();
+    fr.onload = function(){ res({name:file.name, data:String(fr.result).split(",")[1]}); };
+    fr.onerror = rej; fr.readAsDataURL(file);
+  }) : Promise.resolve(null);
+  readFile.then(function(fileObj){
+    var body = JSON.stringify({name:name, phone:phone, message:message, website:d.get("website")||"", file:fileObj});
+    return fetch(ENDPOINT, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:body});
+  })
    .then(function(r){ return r.json(); })
    .then(function(j){
      if (j && j.ok){ show("접수되었습니다. 곧 연락드리겠습니다.", "ok"); f.reset(); }
