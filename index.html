@@ -83,7 +83,7 @@ footer a{color:#fff}
 </head>
 <body>
 <header><div class="wrap"><a class="logo" href="#top">요약집생성</a>
- <nav><a class="link" href="#service">서비스</a><a class="link" href="#flow">진행 방법</a><a class="link" href="#sample">샘플</a><a class="link" href="#faq">자주 묻는 질문</a><a class="btn small" href="#contact">상담 신청</a></nav>
+ <nav><a class="link" href="#maker">바로 만들기</a><a class="link" href="#service">서비스</a><a class="link" href="#flow">진행 방법</a><a class="link" href="#sample">샘플</a><a class="link" href="#faq">자주 묻는 질문</a><a class="btn small" href="#contact">상담 신청</a></nav>
 </div></header>
 
 <main id="top">
@@ -91,7 +91,7 @@ footer a{color:#fff}
  <div>
   <h1>과정개요서만 넣으면<br>요약집을 생성해줍니다</h1>
   <p>평가 엑셀 하나로 요약집, 과제요약집, 과제 가이드를 Word 파일로 만들어 드립니다.</p>
-  <div class="btns"><a class="btn" href="#contact">상담 신청하기</a><a class="btn ghost" href="#sample">샘플 보기</a></div>
+  <div class="btns"><a class="btn" href="#maker">요약집 바로 만들기</a><a class="btn ghost" href="#contact">상담 신청하기</a><a class="btn ghost" href="#sample">샘플 보기</a></div>
  </div>
  <div class="photo">사진 자리</div>
 </div></div>
@@ -127,6 +127,33 @@ footer a{color:#fff}
     <li>사용할 AI 사이트를 하나로 통일해 안내</li>
    </ul>
    <div class="note">답안 예시와 모범답안은 넣지 않습니다.</div></div>
+ </div>
+</div></section>
+
+<section id="maker"><div class="wrap">
+ <h2>요약집 바로 만들기</h2>
+ <p class="sub">과정개요서(엑셀)를 올리면 시험 문항으로 요약집을 만들어 드립니다. 파일은 서버로 보내지 않고 이 화면에서만 처리됩니다.</p>
+ <div class="box" style="max-width:860px;margin:0 auto">
+  <label for="mkfile" style="margin-top:0">과정개요서 엑셀 (.xlsx)</label>
+  <input id="mkfile" type="file" accept=".xlsx">
+  <label for="mkcourse">과정명 (엑셀에서 자동으로 가져옵니다. 고쳐도 됩니다)</label>
+  <input id="mkcourse" maxlength="120">
+  <button class="btn" id="mkgo" type="button" style="margin-top:16px;width:100%">요약집 만들기</button>
+  <div id="mkmsg" role="status" style="margin-top:12px;font-weight:700;text-align:center;min-height:1.5em"></div>
+  <div id="mkout" style="display:none">
+   <label for="mktext">결과 (바로 고칠 수 있습니다)</label>
+   <textarea id="mktext" style="min-height:360px;font-family:Consolas,'Malgun Gothic',monospace;font-size:15px;line-height:1.6"></textarea>
+   <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+    <button class="btn" id="mkword" type="button">Word로 내려받기</button>
+    <button class="btn ghost" id="mkcopy" type="button">글 복사</button>
+   </div>
+   <p class="privacy">** **로 감싼 부분은 Word에서 굵은 파란색이 됩니다. 소제목은 "■ "로 시작하고, 정의 문장은 "&gt; "로 시작합니다.</p>
+  </div>
+  <ul style="font-size:14.5px;color:var(--muted);margin:16px 0 0;padding-left:20px">
+   <li>시험 시트('2-1. 평가(시험)')의 문항, 보기, 정답을 읽어 규칙대로 정리합니다. AI가 쓰는 것이 아니라 정해진 규칙으로 바꿉니다.</li>
+   <li>소제목은 문제 문장에서 자동으로 만들어서 어색할 수 있어요. 위 칸에서 바로 고치세요. 원문 오타는 고치지 않으니 확인해 주세요.</li>
+   <li>과제요약집(예시 답안 여러 개)과 과제 가이드는 글을 새로 써야 해서 아래 상담 신청으로 맡겨 주세요.</li>
+  </ul>
  </div>
 </div></section>
 
@@ -227,6 +254,140 @@ footer a{color:#fff}
 
 <a class="btn float" href="#contact">상담 신청</a>
 
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var msg = $("mkmsg");
+  function say(t, c){ msg.textContent = t; msg.style.color = c === "err" ? "#c0392b" : (c === "ok" ? "#0a7a3d" : ""); }
+  function norm(s){ return String(s == null ? "" : s).replace(/\r/g, "").replace(/\s*\n\s*/g, " ").replace(/[ \t ]+/g, " ").trim(); }
+  var NEG = ["바르게 짝지어지지 않은","올바르지 않은","바르지 않은","적절하지 않은","짝지어지지 않은","옳지 않은","해당하지 않는","속하지 않는","잘못된","틀린","아닌"];
+  var FLIP = {"바르게 짝지어지지 않은":"바르게 짝지어진","올바르지 않은":"올바른","바르지 않은":"바른","적절하지 않은":"적절한","짝지어지지 않은":"짝지어진","옳지 않은":"옳은","해당하지 않는":"해당하는","속하지 않는":"속하는","잘못된":"옳은","틀린":"맞는","아닌":"맞는"};
+  function isNeg(q){
+    var tail = q.replace(/\?$/, "").slice(-40);
+    if (!/것[은을이]?$/.test(tail)) return false;
+    return NEG.some(function(w){ return tail.indexOf(w) >= 0; });
+  }
+  function makeHeading(q, neg){
+    var h = q.replace(/\?$/, "").trim();
+    var m = h.match(/^(.*?(?:에 대한|에 관한)\s*설명)\s*중\s.*$/);
+    if (neg && m) return m[1].replace(/^다음\s*(중\s*)?/, "");
+    h = h.replace(/^다음\s*중\s*/, "");
+    if (neg){
+      h = h.replace(/(이|가)\s*아닌/, "인");
+      NEG.forEach(function(w){ if (h.indexOf(w) >= 0 && FLIP[w]) h = h.replace(w, FLIP[w]); });
+    }
+    return h.replace(/것[은을이]$/, "것");
+  }
+  function readCourse(wb){
+    var name = wb.SheetNames.filter(function(n){ return /훈련내용/.test(n); })[0] || wb.SheetNames[0];
+    var rows = XLSX.utils.sheet_to_json(wb.Sheets[name], {header:1, defval:""});
+    var r = rows[1] || [];
+    return norm(r[1] || "");
+  }
+  function build(wb, course){
+    var name = wb.SheetNames.filter(function(n){ return /시험/.test(n); })[0] || wb.SheetNames.filter(function(n){ return /2-1/.test(n); })[0];
+    if (!name) throw new Error("시험 시트('2-1. 평가(시험)')를 찾지 못했습니다.");
+    var rows = XLSX.utils.sheet_to_json(wb.Sheets[name], {header:1, defval:""});
+    var lines = ["# " + course + "_ 요약집"], count = 0, notes = [];
+    rows.forEach(function(r){
+      var no = Number(r[2]), q = norm(r[3]);
+      if (!(no > 0) || !q) return;
+      var ans = r[8], opts = [r[4], r[5], r[6], r[7]].map(norm);
+      var hasOpts = opts.filter(Boolean).length >= 2;
+      count++;
+      if (!hasOpts){
+        var a = norm(ans), s;
+        if (/\(\s*\)/.test(q)) s = q.replace(/\(\s*\)/g, "**" + a + "**");
+        else s = q.replace(/\?$/, "") + " → **" + a + "**";
+        lines.push("> " + s);
+        return;
+      }
+      var idx = parseInt(ans, 10);
+      if (!(idx >= 1 && idx <= 4)) { notes.push(no + "번 정답을 읽지 못해 건너뜀"); return; }
+      var neg = isNeg(q);
+      lines.push("■ " + makeHeading(q, neg));
+      var items = neg ? opts.filter(function(o, i){ return o && i !== idx - 1; }) : [opts[idx - 1]];
+      items.forEach(function(o, i){ lines.push((i + 1) + ". " + o.replace(/^\d+[.)]\s*/, "")); });
+    });
+    return {text: lines.join("\n"), count: count, notes: notes};
+  }
+  var go = $("mkgo");
+  go.addEventListener("click", function(){
+    var f = $("mkfile").files && $("mkfile").files[0];
+    if (!f){ say("엑셀 파일을 먼저 선택해 주세요.", "err"); return; }
+    if (!/\.xlsx$/i.test(f.name)){ say("엑셀(.xlsx) 파일만 사용할 수 있습니다.", "err"); return; }
+    if (f.size > 10 * 1024 * 1024){ say("파일이 너무 큽니다. 10MB 이하로 올려 주세요.", "err"); return; }
+    if (typeof XLSX === "undefined"){ say("엑셀 읽기 도구를 불러오지 못했습니다. 새로고침 후 다시 해 주세요.", "err"); return; }
+    say("만드는 중입니다...");
+    var fr = new FileReader();
+    fr.onload = function(){
+      try {
+        var wb = XLSX.read(fr.result, {type:"array"});
+        var course = $("mkcourse").value.trim() || readCourse(wb) || "과정명";
+        $("mkcourse").value = course;
+        var res = build(wb, course);
+        if (!res.count){ say("시험 문항을 찾지 못했습니다. 시트와 열 순서를 확인해 주세요.", "err"); return; }
+        $("mktext").value = res.text;
+        $("mkout").style.display = "block";
+        say(res.count + "개 문항을 정리했습니다." + (res.notes.length ? " (" + res.notes.join(", ") + ")" : ""), "ok");
+      } catch (e) { say(e.message || "엑셀을 읽지 못했습니다.", "err"); }
+    };
+    fr.onerror = function(){ say("파일을 읽지 못했습니다.", "err"); };
+    fr.readAsArrayBuffer(f);
+  });
+  $("mkfile").addEventListener("change", function(){
+    var f = this.files && this.files[0];
+    if (!f || typeof XLSX === "undefined") return;
+    var fr = new FileReader();
+    fr.onload = function(){ try { $("mkcourse").value = readCourse(XLSX.read(fr.result, {type:"array"})); } catch (e) {} };
+    fr.readAsArrayBuffer(f);
+  });
+  $("mkcopy").addEventListener("click", function(){
+    var t = $("mktext"); t.select();
+    try { navigator.clipboard.writeText(t.value).then(function(){ say("복사했습니다.", "ok"); }, function(){ document.execCommand("copy"); say("복사했습니다.", "ok"); }); }
+    catch (e) { document.execCommand("copy"); say("복사했습니다.", "ok"); }
+  });
+  function runs(text){
+    var D = window.docx;
+    return text.split(/(\*\*[^*]+\*\*)/).filter(Boolean).map(function(p){
+      return /^\*\*[^*]+\*\*$/.test(p)
+        ? new D.TextRun({text:p.slice(2,-2), bold:true, color:"0070C0", font:"맑은 고딕", size:20})
+        : new D.TextRun({text:p, font:"맑은 고딕", size:20});
+    });
+  }
+  $("mkword").addEventListener("click", function(){
+    var D = window.docx;
+    if (!D){ say("Word 만들기 도구를 불러오지 못했습니다. 새로고침 후 다시 해 주세요.", "err"); return; }
+    var course = $("mkcourse").value.trim() || "과정명";
+    var kids = [], first = true;
+    $("mktext").value.split("\n").forEach(function(line){
+      if (!line.trim()) return;
+      if (line.indexOf("# ") === 0){
+        kids.push(new D.Paragraph({alignment:D.AlignmentType.CENTER, spacing:{after:240}, children:[new D.TextRun({text:line.slice(2), bold:true, color:"0070C0", font:"맑은 고딕", size:30})]}));
+      } else if (line.indexOf("■ ") === 0){
+        kids.push(new D.Paragraph({spacing:{before:200, after:40, line:300}, indent:{left:360, hanging:360}, children:[new D.TextRun({text:"■ ", color:"0070C0", font:"맑은 고딕", size:20}), new D.TextRun({text:line.slice(2), bold:true, font:"맑은 고딕", size:20})]}));
+      } else if (line.indexOf("> ") === 0){
+        kids.push(new D.Paragraph({spacing:{before:200, after:40, line:300}, indent:{left:360}, children:runs(line.slice(2))}));
+      } else if (/^\d+\.\s/.test(line)){
+        kids.push(new D.Paragraph({spacing:{after:40, line:300}, indent:{left:720, hanging:360}, children:runs(line)}));
+      } else {
+        kids.push(new D.Paragraph({spacing:{after:40, line:300}, children:runs(line)}));
+      }
+    });
+    var doc = new D.Document({sections:[{properties:{page:{size:{width:11906, height:16838}, margin:{top:1300, bottom:1200, left:1300, right:1300}}}, children:kids}]});
+    D.Packer.toBlob(doc).then(function(blob){
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = course.replace(/[\\\/:*?"<>|]/g, "_") + "_요약집.docx";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+      say("Word 파일을 내려받았습니다.", "ok");
+    }, function(){ say("Word 파일을 만들지 못했습니다.", "err"); });
+  });
+})();
+</script>
 <script>
 var ENDPOINT = "https://script.google.com/macros/s/AKfycbyqFg5cjPgKjd1hilff-0BqPLl9bFYoXrIeSM6G32c9PW8eLBZlmK2Dj5nJoC6WfP7y/exec";
 var f = document.getElementById("f"), msg = document.getElementById("msg"), send = document.getElementById("send");
