@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>요약집생성 - 과정개요서만 넣으면 요약집을 생성해줍니다</title>
+<meta name="description" content="최종평가, 과제, 요약집 작성. 과정개요서만 넣으면 요약집을 생성해줍니다.">
+<style>
+:root{--blue:#1a56db;--blue-dark:#1240a8;--blue-soft:#eaf1fe;--text:#1b2433;--muted:#5b6578;--line:#dde3ee;--bg:#fff}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:var(--text);background:var(--bg);line-height:1.7;font-size:17px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);z-index:10}
+header .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-weight:700;font-size:20px;color:var(--blue);text-decoration:none}
+.btn{display:inline-block;background:var(--blue);color:#fff;border:0;border-radius:10px;padding:14px 26px;font-size:17px;font-weight:700;text-decoration:none;cursor:pointer;font-family:inherit}
+.btn:hover{background:var(--blue-dark)}
+.btn.small{padding:8px 16px;font-size:15px}
+.hero{background:var(--blue-soft);padding:64px 0}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center}
+.hero h1{font-size:40px;line-height:1.3;margin:0 0 16px}
+.hero p{font-size:20px;color:var(--muted);margin:0 0 28px}
+.photo{background:#d4d7dd;border-radius:16px;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;color:#7b8190;font-size:15px}
+section{padding:60px 0}
+h2{font-size:30px;margin:0 0 8px;text-align:center}
+.sub{text-align:center;color:var(--muted);margin:0 0 36px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{border:1px solid var(--line);border-radius:14px;padding:26px;background:#fff}
+.card h3{margin:14px 0 6px;font-size:21px;color:var(--blue)}
+.card p{margin:0;color:var(--muted)}
+.card .photo{aspect-ratio:16/9;border-radius:10px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;counter-reset:s}
+.step{background:var(--blue-soft);border-radius:14px;padding:26px;position:relative}
+.step::before{counter-increment:s;content:counter(s);display:inline-flex;width:38px;height:38px;border-radius:50%;background:var(--blue);color:#fff;align-items:center;justify-content:center;font-weight:700;margin-bottom:10px}
+.step h3{margin:0 0 6px;font-size:20px}
+.step p{margin:0;color:var(--muted)}
+.alt{background:#f6f8fc}
+.tags{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.tag{background:#fff;border:1px solid var(--line);border-radius:999px;padding:10px 20px;font-weight:700;color:var(--blue)}
+form{max-width:560px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:28px}
+label{display:block;font-weight:700;margin:14px 0 6px}
+input,textarea{width:100%;padding:12px 14px;border:1px solid #c4ccdb;border-radius:8px;font-size:17px;font-family:inherit}
+input:focus,textarea:focus{outline:2px solid var(--blue);border-color:var(--blue)}
+textarea{min-height:120px;resize:vertical}
+.hp{position:absolute;left:-9999px;height:0;overflow:hidden}
+#msg{margin-top:14px;font-weight:700;text-align:center;min-height:1.5em}
+#msg.ok{color:#0a7a3d}#msg.err{color:#c0392b}
+form .btn{width:100%;margin-top:18px}
+footer{background:#14213d;color:#d7deee;padding:36px 0;text-align:center}
+footer a{color:#fff}
+.float{position:fixed;right:18px;bottom:18px;z-index:20;box-shadow:0 6px 18px rgba(26,86,219,.35);border-radius:999px}
+@media(max-width:760px){
+ body{font-size:16px}
+ .hero{padding:40px 0}.hero .wrap{grid-template-columns:1fr}
+ .hero h1{font-size:30px}.hero p{font-size:18px}
+ .cards,.steps{grid-template-columns:1fr}
+ section{padding:44px 0}h2{font-size:25px}
+}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a class="logo" href="#top">요약집생성</a><a class="btn small" href="#contact">상담 신청</a></div></header>
+
+<main id="top">
+<div class="hero"><div class="wrap">
+ <div>
+  <h1>과정개요서만 넣으면<br>요약집을 생성해줍니다</h1>
+  <p>최종평가, 과제, 요약집 작성까지 깔끔하게 도와드립니다.</p>
+  <a class="btn" href="#contact">상담 신청하기</a>
+ </div>
+ <div class="photo">사진 자리</div>
+</div></div>
+
+<section><div class="wrap">
+ <h2>하는 일</h2>
+ <p class="sub">요약집생성이 도와드리는 세 가지</p>
+ <div class="cards">
+  <div class="card"><div class="photo">사진 자리</div><h3>최종평가</h3><p>과정개요서를 바탕으로 최종평가 자료를 정리합니다.</p></div>
+  <div class="card"><div class="photo">사진 자리</div><h3>과제</h3><p>과제 작성에 필요한 내용을 알기 쉽게 정리합니다.</p></div>
+  <div class="card"><div class="photo">사진 자리</div><h3>요약집 작성</h3><p>핵심만 모은 요약집을 만들어 드립니다.</p></div>
+ </div>
+</div></section>
+
+<section class="alt"><div class="wrap">
+ <h2>이용 방법</h2>
+ <p class="sub">세 단계면 끝납니다</p>
+ <div class="steps">
+  <div class="step"><h3>과정개요서 전달</h3><p>가지고 계신 과정개요서를 보내 주세요.</p></div>
+  <div class="step"><h3>요약집 생성</h3><p>내용을 바탕으로 요약집을 만듭니다.</p></div>
+  <div class="step"><h3>확인 후 전달</h3><p>확인하신 뒤 완성본을 받아 보세요.</p></div>
+ </div>
+</div></section>
+
+<section><div class="wrap">
+ <h2>이런 분께 도움이 됩니다</h2>
+ <p class="sub">해당되는 분이 계신지 확인해 보세요</p>
+ <div class="tags">
+  <span class="tag">교육 과정 운영 담당자</span>
+  <span class="tag">최종평가를 준비하는 분</span>
+  <span class="tag">과제 정리가 막막한 분</span>
+  <span class="tag">요약집이 필요한 분</span>
+ </div>
+</div></section>
+
+<section class="alt" id="contact"><div class="wrap">
+ <h2>상담 신청</h2>
+ <p class="sub">남겨 주시면 확인 후 연락드립니다</p>
+ <form id="f" novalidate>
+  <label for="name">이름 (필수)</label>
+  <input id="name" name="name" maxlength="50" required autocomplete="name">
+  <label for="phone">연락처 (필수)</label>
+  <input id="phone" name="phone" maxlength="30" inputmode="tel" placeholder="010-0000-0000" required autocomplete="tel">
+  <label for="message">문의 내용</label>
+  <textarea id="message" name="message" maxlength="1000"></textarea>
+  <div class="hp" aria-hidden="true"><label>비워 두세요<input name="website" tabindex="-1" autocomplete="off"></label></div>
+  <button class="btn" id="send" type="submit">상담 신청 보내기</button>
+  <div id="msg" role="status"></div>
+ </form>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+ <p><strong>요약집생성</strong></p>
+ <p>전화 <a href="tel:01012345678">010-1234-5678</a> · 이메일 <a href="mailto:peech1996@gmail.com">peech1996@gmail.com</a></p>
+</div></footer>
+
+<a class="btn float" href="#contact">상담 신청</a>
+
+<script>
+var ENDPOINT = "https://script.google.com/macros/s/AKfycbyqFg5cjPgKjd1hilff-0BqPLl9bFYoXrIeSM6G32c9PW8eLBZlmK2Dj5nJoC6WfP7y/exec";
+var f = document.getElementById("f"), msg = document.getElementById("msg"), send = document.getElementById("send");
+function show(t, c){ msg.textContent = t; msg.className = c || ""; }
+f.addEventListener("submit", function(e){
+  e.preventDefault();
+  var d = new FormData(f);
+  var name = (d.get("name") || "").trim(), phone = (d.get("phone") || "").trim();
+  if (!name){ show("이름을 입력해 주세요.", "err"); return; }
+  if (!phone){ show("연락처를 입력해 주세요.", "err"); return; }
+  if (ENDPOINT.indexOf("http") !== 0){ show("아직 접수 기능이 연결되지 않았습니다.", "err"); return; }
+  send.disabled = true; show("보내는 중입니다...");
+  var body = JSON.stringify({name:name, phone:phone, message:(d.get("message")||"").trim(), website:d.get("website")||""});
+  fetch(ENDPOINT, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:body})
+   .then(function(r){ return r.json(); })
+   .then(function(j){
+     if (j && j.ok){ show("접수되었습니다. 곧 연락드리겠습니다.", "ok"); f.reset(); }
+     else { show((j && j.error) || "접수에 실패했습니다. 전화로 문의해 주세요.", "err"); }
+   })
+   .catch(function(){ show("접수에 실패했습니다. 전화로 문의해 주세요.", "err"); })
+   .then(function(){ send.disabled = false; });
+});
+</script>
+</body>
+</html>
