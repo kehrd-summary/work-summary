@@ -196,6 +196,7 @@ footer a{color:#fff}
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
 (function(){
   var $ = function(id){ return document.getElementById(id); };
@@ -356,8 +357,30 @@ footer a{color:#fff}
         kids.push(new D.Paragraph({spacing:{after:40, line:300}, children:runs(line)}));
       }
     });
-    var doc = new D.Document({sections:[{properties:{page:{size:{width:11906, height:16838}, margin:{top:1300, bottom:1200, left:1300, right:1300}}}, children:kids}]});
-    D.Packer.toBlob(doc).then(function(blob){
+    var doc = new D.Document({sections:[{properties:{page:{size:{width:11906, height:16838}, margin:{top:1300, bottom:1200, left:1300, right:2300}}},
+      headers:{default:new D.Header({children:[new D.Paragraph({children:[new D.TextRun("SIDEBAND_MARKER")]})]})}, children:kids}]});
+    var esc = function(t){ return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); };
+    var band = '<w:r><w:pict><v:rect id="SideBand" o:spid="_x0000_s1025" style="position:absolute;margin-left:0;margin-top:0;width:62pt;height:841.9pt;z-index:-251658240;mso-position-horizontal:right;mso-position-horizontal-relative:page;mso-position-vertical:top;mso-position-vertical-relative:page" fillcolor="#C5D9F1" stroked="f"><v:textbox style="layout-flow:vertical;mso-layout-flow-alt:bottom-to-top" inset="0,0,0,0"><w:txbxContent><w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:rPr><w:rFonts w:ascii="맑은 고딕" w:eastAsia="맑은 고딕" w:hAnsi="맑은 고딕"/><w:color w:val="1F4E79"/><w:sz w:val="40"/></w:rPr><w:t xml:space="preserve">' + esc(course) + '_ 요약집</w:t></w:r></w:p></w:txbxContent></v:textbox><w10:wrap anchorx="page" anchory="page"/></v:rect></w:pict></w:r>';
+    function addBand(blob){
+      if (typeof JSZip === "undefined") return Promise.resolve(blob);
+      return JSZip.loadAsync(blob).then(function(zip){
+        var names = Object.keys(zip.files).filter(function(n){ return /^word\/header\d*\.xml$/.test(n); });
+        return Promise.all(names.map(function(n){
+          return zip.file(n).async("string").then(function(x){
+            if (x.indexOf("SIDEBAND_MARKER") < 0) return;
+            x = x.replace(/<w:r>(?:(?!<w:r>)[\s\S])*?SIDEBAND_MARKER<\/w:t><\/w:r>/, band);
+            x = x.replace("SIDEBAND_MARKER", "");
+            var root = x.match(/<w:hdr\b[^>]*>/)[0], add = "";
+            if (root.indexOf("xmlns:v=") < 0) add += ' xmlns:v="urn:schemas-microsoft-com:vml"';
+            if (root.indexOf("xmlns:o=") < 0) add += ' xmlns:o="urn:schemas-microsoft-com:office:office"';
+            if (root.indexOf("xmlns:w10=") < 0) add += ' xmlns:w10="urn:schemas-microsoft-com:office:word"';
+            if (add) x = x.replace(root, root.slice(0, -1) + add + ">");
+            zip.file(n, x);
+          });
+        })).then(function(){ return zip.generateAsync({type:"blob", mimeType:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"}); });
+      }).catch(function(){ return blob; });
+    }
+    D.Packer.toBlob(doc).then(addBand).then(function(blob){
       var a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = course.replace(/[\\\/:*?"<>|]/g, "_") + "_요약집.docx";
