@@ -252,6 +252,7 @@ footer a{color:#fff}
   function section(rows, mark){
     var lines = [], count = 0, notes = [];
     rows.forEach(function(r){
+      if (/^(선다형|단답형|진위형|OX|O\/X|객관식|주관식|서술형)$/i.test(norm(r[3]))) r = r.slice(0, 3).concat(r.slice(4));
       var no = Number(r[2]), q = norm(r[3]);
       if (!(no > 0) || !q) return;
       var ans = r[8], opts = [r[4], r[5], r[6], r[7]].map(norm);
