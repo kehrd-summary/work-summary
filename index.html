@@ -271,7 +271,7 @@ footer a{color:#fff}
         if (/\(\s*\)/.test(q)) s = fillBlank(q, a);
         else if (st) s = sentence(st, a);
         else s = q.replace(/[?？]\s*$/, "") + " → **" + a + "**";
-        lines.push("> " + s);
+        lines.push("> " + mark + " " + s);
         return;
       }
       var idx = parseInt(ans, 10);
@@ -279,8 +279,8 @@ footer a{color:#fff}
       var neg = isNeg(q);
       if (!neg){
         var right = opts[idx - 1], st2 = stemOf(q);
-        if (/\(\s*\)/.test(q)){ lines.push("> " + fillBlank(q, right)); return; }
-        if (st2){ var sn = sentence(st2, right); if (sn){ lines.push("> " + sn); return; } }
+        if (/\(\s*\)/.test(q)){ lines.push("> " + mark + " " + fillBlank(q, right)); return; }
+        if (st2){ var sn = sentence(st2, right); if (sn){ lines.push("> " + mark + " " + sn); return; } }
       }
       lines.push(mark + " " + makeHeading(q, neg));
       var items = neg ? opts.filter(function(o, i){ return o && i !== idx - 1; }) : [opts[idx - 1]];
@@ -357,7 +357,7 @@ footer a{color:#fff}
       } else if (/^[●◆■] /.test(line)){
         kids.push(new D.Paragraph({spacing:{before:200, after:40, line:300}, indent:{left:360, hanging:360}, children:[new D.TextRun({text:line.charAt(0) + " ", color:"000000", font:"맑은 고딕", size:20}), new D.TextRun({text:line.slice(2), bold:true, font:"맑은 고딕", size:20})]}));
       } else if (line.indexOf("> ") === 0){
-        kids.push(new D.Paragraph({spacing:{before:200, after:40, line:300}, indent:{left:360}, children:runs(line.slice(2))}));
+        kids.push(new D.Paragraph({spacing:{before:200, after:40, line:300}, indent:{left:360, hanging:360}, children:(/^[●◆■] /.test(line.slice(2)) ? [new D.TextRun({text:line.charAt(2) + " ", color:"000000", font:"맑은 고딕", size:20})].concat(runs(line.slice(4))) : runs(line.slice(2)))}));
       } else if (/^\d+\.\s/.test(line)){
         kids.push(new D.Paragraph({spacing:{after:40, line:300}, indent:{left:720, hanging:360}, children:runs(line)}));
       } else {
