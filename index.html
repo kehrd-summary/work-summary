@@ -99,7 +99,6 @@ footer a{color:#fff}
    <li>문제와 정답을 "○○은 ○○이다" 한 문장으로 정리</li>
    <li>빈칸( ) 문항은 빈칸에 정답을 넣은 문장으로</li>
    <li>"잘못된 것은?" 문항은 올바른 보기만 번호 목록으로</li>
-   <li>진행단계평가는 ●, 최종평가는 ◆로 표시하고 실선으로 구분</li>
    <li>정답 키워드는 굵은 파란색으로 표시</li>
   </ul>
   <div class="note">자료에 없는 내용은 추가하지 않습니다.</div></div>
@@ -149,7 +148,7 @@ footer a{color:#fff}
   <div class="box"><h3>준비할 자료</h3>
    <ul>
     <li>평가 엑셀(과정개요서) .xlsx 파일</li>
-    <li>진행단계평가 시트와 시험 시트('2-1. 평가(시험)')에 문항, 보기, 정답이 있어야 합니다 (한쪽만 있어도 만들 수 있습니다)</li>
+    <li>진행단계평가 시트와 시험 시트('2-1. 평가(시험)')에 문항, 보기, 정답이 있어야 합니다</li>
     <li>과정명은 '훈련내용' 시트에서 자동으로 가져옵니다</li>
    </ul></div>
   <div class="box"><h3>내려받기 전에 확인하세요</h3>
@@ -250,48 +249,29 @@ footer a{color:#fff}
     var r = rows[1] || [];
     return norm(r[1] || "");
   }
-  function colMap(rows){
-    var m = {no:2, q:3, o:[4,5,6,7], a:8, start:0};
-    for (var i = 0; i < Math.min(rows.length, 12); i++){
-      var r = rows[i].map(norm), a = -1, q = -1, no = -1, o = [];
-      r.forEach(function(c, j){
-        if (a < 0 && /^정답/.test(c)) a = j;
-        else if (no < 0 && /번호/.test(c)) no = j;
-        else if (q < 0 && /^(문항|문제)/.test(c)) q = j;
-        else if (/보기|선택지|^[①②③④]$|^[1-4]$/.test(c)) o.push(j);
-      });
-      if (a >= 0 && q >= 0){
-        if (o.length < 2){ o = []; for (var k = q + 1; k < a && o.length < 4; k++) o.push(k); }
-        return {no: no >= 0 ? no : m.no, q:q, o:o.slice(0,4), a:a, start:i + 1};
-      }
-    }
-    return m;
-  }
-  function section(rows, mark, label){
-    var c = colMap(rows), lines = [], count = 0, notes = [];
-    rows.slice(c.start).forEach(function(r){
-      var no = Number(r[c.no]), q = norm(r[c.q]);
+  function section(rows, mark){
+    var lines = [], count = 0, notes = [];
+    rows.forEach(function(r){
+      var no = Number(r[2]), q = norm(r[3]);
       if (!(no > 0) || !q) return;
-      var ans = r[c.a], opts = c.o.map(function(j){ return norm(r[j]); });
-      while (opts.length < 4) opts.push("");
+      var ans = r[8], opts = [r[4], r[5], r[6], r[7]].map(norm);
       var hasOpts = opts.filter(Boolean).length >= 2;
       count++;
       if (!hasOpts){
         var a = norm(ans), s, st = stemOf(q);
-        if (!a){ notes.push(label + " " + no + "번 정답 없음"); return; }
         if (/\(\s*\)/.test(q)) s = fixJosa(q.replace(/\(\s*\)/g, "**" + a + "**").replace(/[?？]\s*$/, ""));
         else if (st) s = sentence(st, a);
         else s = q.replace(/[?？]\s*$/, "") + " → **" + a + "**";
-        lines.push(mark + " " + s);
+        lines.push("> " + s);
         return;
       }
-      var idx = parseInt(String(ans).replace(/[①②③④]/, function(x){ return "①②③④".indexOf(x) + 1; }), 10);
-      if (!(idx >= 1 && idx <= 4)) { notes.push(label + " " + no + "번 정답을 읽지 못해 건너뜀"); return; }
+      var idx = parseInt(ans, 10);
+      if (!(idx >= 1 && idx <= 4)) { notes.push(no + "번 정답을 읽지 못해 건너뜀"); return; }
       var neg = isNeg(q);
       if (!neg){
         var right = opts[idx - 1], st2 = stemOf(q);
-        if (/\(\s*\)/.test(q)){ lines.push(mark + " " + fixJosa(q.replace(/\(\s*\)/g, "**" + right.replace(/^\d+[.)]\s*/, "") + "**").replace(/[?？]\s*$/, ""))); return; }
-        if (st2){ var sn = sentence(st2, right); if (sn){ lines.push(mark + " " + sn); return; } }
+        if (/\(\s*\)/.test(q)){ lines.push("> " + fixJosa(q.replace(/\(\s*\)/g, "**" + right.replace(/^\d+[.)]\s*/, "") + "**").replace(/[?？]\s*$/, ""))); return; }
+        if (st2){ var sn = sentence(st2, right); if (sn){ lines.push("> " + sn); return; } }
       }
       lines.push(mark + " " + makeHeading(q, neg));
       var items = neg ? opts.filter(function(o, i){ return o && i !== idx - 1; }) : [opts[idx - 1]];
@@ -299,16 +279,16 @@ footer a{color:#fff}
     });
     return {lines:lines, count:count, notes:notes};
   }
-  function sheetRows(wb, name){ return XLSX.utils.sheet_to_json(wb.Sheets[name], {header:1, defval:""}); }
   function build(wb, course){
     var names = wb.SheetNames;
     var prog = names.filter(function(n){ return /진행/.test(n); })[0];
-    var fin = names.filter(function(n){ return /시험|최종/.test(n) && !/진행/.test(n); })[0] || names.filter(function(n){ return /2-1/.test(n); })[0];
-    if (!fin && !prog) throw new Error("시험 시트('2-1. 평가(시험)')나 진행단계평가 시트를 찾지 못했습니다.");
-    var lines = ["# " + course + "_ 요약집"], p = null, f = null;
-    if (prog){ p = section(sheetRows(wb, prog), "●", "진행단계"); lines = lines.concat(p.lines); }
-    if (fin){ f = section(sheetRows(wb, fin), "◆", "최종평가"); if (p && p.lines.length && f.lines.length) lines.push("---"); lines = lines.concat(f.lines); }
-    return {text: lines.join("\n"), prog: p ? p.count : -1, fin: f ? f.count : -1, count: (p ? p.count : 0) + (f ? f.count : 0), notes: (p ? p.notes : []).concat(f ? f.notes : [])};
+    var fin = names.filter(function(n){ return /시험/.test(n) && !/진행/.test(n); })[0] || names.filter(function(n){ return /2-1/.test(n); })[0];
+    if (!fin) throw new Error("시험 시트('2-1. 평가(시험)')를 찾지 못했습니다.");
+    var rows = function(n){ return XLSX.utils.sheet_to_json(wb.Sheets[n], {header:1, defval:""}); };
+    var lines = ["# " + course + "_ 요약집"], count = 0, notes = [];
+    if (prog){ var p = section(rows(prog), "●"); lines = lines.concat(p.lines, ["---"]); count += p.count; notes = notes.concat(p.notes); }
+    var f = section(rows(fin), "◆"); lines = lines.concat(f.lines); count += f.count; notes = notes.concat(f.notes);
+    return {text: lines.join("\n"), count: count, notes: notes};
   }
   var go = $("mkgo");
   go.addEventListener("click", function(){
@@ -328,10 +308,7 @@ footer a{color:#fff}
         if (!res.count){ say("시험 문항을 찾지 못했습니다. 시트와 열 순서를 확인해 주세요.", "err"); return; }
         $("mktext").value = res.text;
         $("mkout").style.display = "block";
-        var parts = [];
-        if (res.prog >= 0) parts.push("진행단계평가 " + res.prog + "개"); else parts.push("진행단계평가 시트 없음");
-        if (res.fin >= 0) parts.push("최종평가 " + res.fin + "개"); else parts.push("최종평가 시트 없음");
-        say(parts.join(", ") + " 문항을 정리했습니다." + (res.notes.length ? " (" + res.notes.join(", ") + ")" : ""), "ok");
+        say(res.count + "개 문항을 정리했습니다." + (res.notes.length ? " (" + res.notes.join(", ") + ")" : ""), "ok");
       } catch (e) { say(e.message || "엑셀을 읽지 못했습니다.", "err"); }
     };
     fr.onerror = function(){ say("파일을 읽지 못했습니다.", "err"); };
@@ -369,7 +346,7 @@ footer a{color:#fff}
       } else if (/^-{3,}\s*$/.test(line)){
         kids.push(new D.Paragraph({spacing:{before:120, after:120}, border:{bottom:{style:D.BorderStyle.SINGLE, size:8, color:"000000", space:1}}, children:[]}));
       } else if (/^[●◆■] /.test(line)){
-        kids.push(new D.Paragraph({spacing:{before:120, after:40, line:300}, indent:{left:360, hanging:360}, children:[new D.TextRun({text:line.charAt(0) + "  ", color:"000000", font:"맑은 고딕", size:20})].concat(runs(line.slice(2)))}));
+        kids.push(new D.Paragraph({spacing:{before:200, after:40, line:300}, indent:{left:360, hanging:360}, children:[new D.TextRun({text:line.charAt(0) + " ", color:"000000", font:"맑은 고딕", size:20}), new D.TextRun({text:line.slice(2), bold:true, font:"맑은 고딕", size:20})]}));
       } else if (line.indexOf("> ") === 0){
         kids.push(new D.Paragraph({spacing:{before:200, after:40, line:300}, indent:{left:360}, children:runs(line.slice(2))}));
       } else if (/^\d+\.\s/.test(line)){
