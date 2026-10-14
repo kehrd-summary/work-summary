@@ -244,6 +244,13 @@ footer a{color:#fff}
     if (/다$/.test(a)) return stem + " **" + a + "**는 것이다.";
     return stem + " **" + a + "**이다.";
   }
+  function fillBlank(q, a){
+    a = a.replace(/^\d+[.)]\s*/, "").replace(/[.。]\s*$/, "").trim();
+    var p = q.replace(/[?？]\s*$/, "").split(/\(\s*\)/);
+    // "~( )이라고 정의할 때 ( )안에 들어갈 말은?" → 첫 괄호만 채우고 "~이다."로 끝냄
+    if (p.length >= 3 && /(들어갈|알맞은|적절한)/.test(p[p.length - 1])) return fixJosa(p.slice(0, -2).join("**" + a + "**").replace(/\s+$/, "") + " **" + a + "**이다.");
+    return fixJosa(p.join("**" + a + "**"));
+  }
   function readCourse(wb){
     var name = wb.SheetNames.filter(function(n){ return /훈련내용/.test(n); })[0] || wb.SheetNames[0];
     var rows = XLSX.utils.sheet_to_json(wb.Sheets[name], {header:1, defval:""});
@@ -261,7 +268,7 @@ footer a{color:#fff}
       count++;
       if (!hasOpts){
         var a = norm(ans), s, st = stemOf(q);
-        if (/\(\s*\)/.test(q)) s = fixJosa(q.replace(/\(\s*\)/g, "**" + a + "**").replace(/[?？]\s*$/, ""));
+        if (/\(\s*\)/.test(q)) s = fillBlank(q, a);
         else if (st) s = sentence(st, a);
         else s = q.replace(/[?？]\s*$/, "") + " → **" + a + "**";
         lines.push("> " + s);
@@ -272,7 +279,7 @@ footer a{color:#fff}
       var neg = isNeg(q);
       if (!neg){
         var right = opts[idx - 1], st2 = stemOf(q);
-        if (/\(\s*\)/.test(q)){ lines.push("> " + fixJosa(q.replace(/\(\s*\)/g, "**" + right.replace(/^\d+[.)]\s*/, "") + "**").replace(/[?？]\s*$/, ""))); return; }
+        if (/\(\s*\)/.test(q)){ lines.push("> " + fillBlank(q, right)); return; }
         if (st2){ var sn = sentence(st2, right); if (sn){ lines.push("> " + sn); return; } }
       }
       lines.push(mark + " " + makeHeading(q, neg));
