@@ -210,9 +210,12 @@ footer a{color:#fff}
 <section class="alt" id="sample"><div class="wrap">
  <h2>샘플 받아보기</h2>
  <p class="sub">완성본이 어떤 모양인지 미리 확인해 보세요 (PDF)</p>
- <div class="cards" style="grid-template-columns:1fr;max-width:420px;margin:0 auto">
-  <div class="card"><h3>요약집 샘플</h3><p>핵심 내용을 번호 목록으로 정리한 요약집입니다.</p><p style="margin-top:14px"><a class="btn small" href="samples/sample-summary.pdf" download>샘플 내려받기</a></p></div>
+ <div class="cards">
+  <div class="card"><h3>시험 요약집 샘플</h3><p>핵심 내용을 번호 목록으로 정리한 요약집입니다.</p><p style="margin-top:14px"><a class="btn small" href="samples/sample-summary.pdf" download>샘플 내려받기</a></p></div>
+  <div class="card"><h3>과제요약집 샘플</h3><p>모범답안을 예시마다 다른 목록 모양으로 정리한 과제요약집입니다. (예시 5개)</p><p style="margin-top:14px"><a class="btn small" href="samples/sample-book.pdf" download>샘플 내려받기</a></p></div>
+  <div class="card"><h3>과제 가이드 샘플</h3><p>문제 상자와 작성방법 단계를 담은 과제 가이드입니다. (캡처 없이 만든 모습)</p><p style="margin-top:14px"><a class="btn small" href="samples/sample-guide.pdf" download>샘플 내려받기</a></p></div>
  </div>
+ <p class="sub" style="margin:24px 0 0">과제요약집과 과제 가이드 샘플은 예시용으로 지어낸 가상 과정으로 만들었습니다.</p>
 </div></section>
 
 <section><div class="wrap">
@@ -374,7 +377,7 @@ footer a{color:#fff}
     for (var j = s; j < ls.length; j++) if (/^\[[2-9]\]/.test(ls[j])){ e = j; break; }
     var groups = [], g = null;
     ls.slice(s, e).forEach(function(l){
-      if (/^예시\s*정답|모범\s*답안\s*방향|이상적인 정답 예시/.test(l)) return;
+      if (/^예시\s*정답|모범\s*답안\s*방향|이상적인 정답 예시/.test(l) || /^\[(실습형|서술형)[^\]]*\]$/.test(l)) return;
       if (/^(\[[^\]]+\]|※|[①-⑳]|\d+-\d+\))/.test(l) || /[:：]$/.test(l)){
         g = {head:l.replace(/^※\s*/, "").replace(/[:：]$/, "").trim(), items:[]}; groups.push(g); return;
       }
@@ -435,7 +438,7 @@ footer a{color:#fff}
   function resultItems(q, hasDesc){
     var seen = {}, out = [];
     (q.match(/\[[^\[\]\n]{2,20}\]/g) || []).forEach(function(t){
-      if (/실습형|서술형|문항|과제\s*\d|시나리오|진행 방법|스마트 AI/.test(t) || seen[t]) return;
+      if (/실습형|서술형|문항|과제\s*\d|시나리오|상황|진행 방법|제출 내용|스마트 AI/.test(t) || seen[t]) return;
       seen[t] = 1; out.push(t);
     });
     if (!out.length) out.push("[결과물]");
