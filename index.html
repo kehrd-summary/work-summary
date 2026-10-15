@@ -5,96 +5,184 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>요약집생성 - 과정개요서만 넣으면 요약집·과제요약집·과제 가이드를 만들어 줍니다</title>
 <meta name="description" content="평가 엑셀(과정개요서)을 올리면 시험 요약집, 과제요약집, 과제 가이드를 Word 파일로 바로 만들어 드립니다.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-:root{--blue:#1a56db;--blue-dark:#1240a8;--blue-soft:#eaf1fe;--text:#1b2433;--muted:#5b6578;--line:#dde3ee;--bg:#fff}
+/* 따뜻한 교육기관 톤: 칠판 초록 + 형광펜 노랑 + 공책 종이 */
+:root{
+ --ink:#1d3b30;      /* 칠판 초록(진) */
+ --blue:#2a7a5a;     /* 주 색: 칠판 초록 (변수명은 스크립트 호환용) */
+ --blue-dark:#1f6047;
+ --blue-soft:#eaf4ee;/* 연한 초록 */
+ --hl:#ffe36b;       /* 형광펜 */
+ --hl-soft:#fff6c9;
+ --word:#1a56db;     /* Word 결과물의 파란 키워드 */
+ --text:#24302b;--muted:#5d6b64;--line:#d9e4dc;--bg:#fff;--paper:#f6faf6;
+ --r-lg:22px;--r-md:14px;--r-sm:10px;
+}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:var(--text);background:var(--bg);line-height:1.7;font-size:17px}
-.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
-header{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);z-index:10}
-header .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
-header nav{display:flex;gap:20px;align-items:center}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{margin:0;font-family:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;color:var(--text);background:var(--bg);line-height:1.75;font-size:17px;word-break:keep-all}
+h1,h2,h3,.logo{font-family:"Gowun Dodum","Noto Sans KR",sans-serif;font-weight:400;letter-spacing:-.01em}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--hl);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1060px;margin:0 auto;padding:0 20px}
+
+header{position:sticky;top:0;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);z-index:10}
+header .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+header nav{display:flex;gap:22px;align-items:center}
 header nav a.link{color:var(--muted);text-decoration:none;font-size:15px}
-.logo{font-weight:700;font-size:20px;color:var(--blue);text-decoration:none}
-.btn{display:inline-block;background:var(--blue);color:#fff;border:0;border-radius:10px;padding:14px 26px;font-size:17px;font-weight:700;text-decoration:none;cursor:pointer;font-family:inherit}
+header nav a.link:hover{color:var(--ink)}
+.logo{font-size:23px;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:8px}
+.logo svg{width:28px;height:28px}
+
+.btn{display:inline-block;background:var(--blue);color:#fff;border:0;border-radius:999px;padding:14px 28px;font-size:17px;font-weight:700;text-decoration:none;cursor:pointer;font-family:inherit;transition:background .15s}
 .btn:hover{background:var(--blue-dark)}
-.btn.small{padding:8px 16px;font-size:15px}
-.btn.ghost{background:#fff;color:var(--blue);border:1px solid var(--blue)}
-.hero{background:var(--blue-soft);padding:64px 0}
-.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center}
-.hero h1{font-size:40px;line-height:1.3;margin:0 0 16px}
-.hero p{font-size:20px;color:var(--muted);margin:0 0 28px}
+.btn.small{padding:8px 18px;font-size:15px}
+.btn.ghost{background:#fff;color:var(--blue-dark);box-shadow:inset 0 0 0 1.5px var(--blue)}
+.btn.ghost:hover{background:var(--blue-soft)}
+
+/* 첫 화면 */
+.hero{background:var(--paper);padding:72px 0 80px;overflow:hidden;
+ background-image:linear-gradient(var(--line) 1px,transparent 1px);background-size:100% 34px;background-position:0 18px}
+.hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+.hero h1{font-size:44px;line-height:1.35;margin:0 0 18px;color:var(--ink)}
+.hero h1 .mark{background:linear-gradient(transparent 58%,var(--hl) 58%,var(--hl) 92%,transparent 92%);padding:0 4px}
+.hero p{font-size:19px;color:var(--muted);margin:0 0 30px;max-width:30em}
 .hero .btns{display:flex;gap:12px;flex-wrap:wrap}
-.photo{background:#d4d7dd;border-radius:16px;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;color:#7b8190;font-size:15px}
-section{padding:60px 0}
-h2{font-size:30px;margin:0 0 8px;text-align:center}
-.sub{text-align:center;color:var(--muted);margin:0 0 36px}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-.card{border:1px solid var(--line);border-radius:14px;padding:26px;background:#fff}
-.card .tag2{display:inline-block;background:var(--blue-soft);color:var(--blue);font-weight:700;font-size:13px;border-radius:999px;padding:2px 12px}
-.card h3{margin:12px 0 6px;font-size:21px;color:var(--blue)}
+.hero .facts{display:flex;gap:18px;flex-wrap:wrap;margin:26px 0 0;padding:0;list-style:none;font-size:14.5px;color:var(--muted)}
+.hero .facts li{display:flex;align-items:center;gap:6px}
+.hero .facts svg{width:18px;height:18px;color:var(--blue)}
+
+/* 요약집 종이 그림 */
+.sheets{position:relative;height:360px}
+.sheet{position:absolute;background:#fff;border-radius:6px;box-shadow:0 1px 0 #e3e9e4,0 18px 40px -18px rgba(29,59,48,.35);font-size:13px;line-height:1.6;color:#2b2b2b}
+.sheet.back{inset:30px 6px 0 60px;transform:rotate(5deg);background:#fdfdfb}
+.sheet.back::after{content:"";position:absolute;left:22px;right:22px;top:40px;height:120px;background:repeating-linear-gradient(#eef1ee 0 2px,transparent 2px 22px)}
+.sheet.front{inset:0 54px 26px 0;transform:rotate(-2.5deg);padding:26px 26px 26px 40px;border-left:8px solid var(--word);animation:lay .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes lay{from{transform:rotate(-8deg) translateY(16px);opacity:0}}
+.sheet .ttl{font-weight:700;font-size:15px;margin:0 0 12px;padding-bottom:8px;border-bottom:1.5px solid #222}
+.sheet .h{font-weight:700;margin:12px 0 4px}
+.sheet ol{margin:0;padding-left:18px}
+.sheet li{margin:3px 0}
+.sheet b{color:var(--word)}
+.sheet .hl{background:linear-gradient(transparent 50%,var(--hl) 50%);}
+.sheet .sticky{position:absolute;right:-26px;bottom:34px;background:var(--hl);color:var(--ink);font-family:"Gowun Dodum",sans-serif;font-size:15px;padding:12px 14px;transform:rotate(4deg);box-shadow:0 8px 16px -10px rgba(0,0,0,.4);line-height:1.4}
+
+section{padding:76px 0;scroll-margin-top:64px}
+h2{font-size:33px;margin:0 0 10px;text-align:center;color:var(--ink)}
+.sub{text-align:center;color:var(--muted);margin:0 auto 40px;max-width:40em}
+
+/* 서비스 카드 */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.card{border:1px solid var(--line);border-radius:var(--r-lg);padding:28px;background:#fff;display:flex;flex-direction:column}
+.card .ico{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;margin-bottom:6px}
+.card .ico svg{width:30px;height:30px}
+.card.c1 .ico{background:var(--blue-soft);color:var(--blue)}
+.card.c2 .ico{background:var(--hl-soft);color:#9a7a00}
+.card.c3 .ico{background:#fdeee6;color:#b5532b}
+.card .tag2{display:inline-block;align-self:flex-start;background:var(--paper);color:var(--muted);font-size:13px;border-radius:999px;padding:2px 12px;border:1px solid var(--line)}
+.card h3{margin:10px 0 6px;font-size:24px;color:var(--ink)}
 .card p{margin:0 0 10px;color:var(--muted)}
 .card ul{margin:0;padding-left:20px;font-size:15.5px}
-.card li{margin:4px 0}
-.card .note{margin-top:12px;font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
-.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:s}
-.step{background:var(--blue-soft);border-radius:14px;padding:22px;position:relative}
-.step::before{counter-increment:s;content:counter(s);display:inline-flex;width:36px;height:36px;border-radius:50%;background:var(--blue);color:#fff;align-items:center;justify-content:center;font-weight:700;margin-bottom:8px}
-.step h3{margin:0 0 6px;font-size:19px}
+.card li{margin:5px 0}
+.card li::marker{color:var(--blue)}
+.card .note{margin-top:auto;padding-top:14px;font-size:14px;color:var(--muted);border-top:1px dashed var(--line)}
+.card .note:first-of-type{margin-top:16px}
+#service .cards .card .note{margin-top:16px}
+
+/* 바로 만들기 */
+#maker{background:linear-gradient(var(--blue-soft),#fff 70%)}
+#maker .box{max-width:860px;margin:0 auto;border-radius:var(--r-lg);padding:34px;border:0;box-shadow:0 0 0 1px var(--line),0 24px 50px -30px rgba(29,59,48,.35);position:relative}
+#maker .box::before{content:"";position:absolute;left:34px;right:34px;top:0;height:6px;border-radius:0 0 6px 6px;background:linear-gradient(90deg,var(--blue) 0 60%,var(--hl) 60%)}
+#aibox{background:var(--hl-soft)!important;border:1px solid #f1df8f}
+#aibox>div:first-child{color:var(--ink)!important}
+
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;counter-reset:s;position:relative}
+.step{background:#fff;border:1px solid var(--line);border-radius:var(--r-md);padding:24px 22px;position:relative}
+.step::before{counter-increment:s;content:counter(s);display:inline-flex;width:40px;height:40px;border-radius:50%;background:var(--hl);color:var(--ink);align-items:center;justify-content:center;font-weight:700;font-family:"Gowun Dodum",sans-serif;font-size:19px;margin-bottom:10px}
+.step h3{margin:0 0 6px;font-size:20px;color:var(--ink)}
 .step p{margin:0;color:var(--muted);font-size:15.5px}
-.alt{background:#f6f8fc}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px}
-.box h3{margin:0 0 10px;font-size:20px;color:var(--blue)}
+.alt{background:var(--paper)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.box{background:#fff;border:1px solid var(--line);border-radius:var(--r-md);padding:26px}
+.box h3{margin:0 0 10px;font-size:22px;color:var(--ink)}
 .box ul{margin:0;padding-left:20px}
 .box li{margin:6px 0}
-.check li{list-style:none;margin-left:-20px;padding-left:26px;position:relative}
-.check li::before{content:"✓";position:absolute;left:0;color:var(--blue);font-weight:700}
-.tags{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
-.tag{background:#fff;border:1px solid var(--line);border-radius:999px;padding:10px 20px;font-weight:700;color:var(--blue)}
-details{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:0 auto 10px;max-width:760px}
-summary{cursor:pointer;font-weight:700}
+.box li::marker{color:var(--blue)}
+.check li{list-style:none;margin-left:-20px;padding-left:28px;position:relative}
+.check li::before{content:"✓";position:absolute;left:0;top:1px;width:20px;height:20px;border-radius:50%;background:var(--blue-soft);color:var(--blue);font-weight:700;font-size:13px;display:grid;place-items:center}
+#sample .card{text-align:left}
+#sample .card h3{font-size:21px}
+#sample .card p:last-child{margin-top:auto!important;padding-top:10px}
+.tags{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.tag{background:#fff;border:1px solid var(--line);border-radius:999px;padding:10px 22px;color:var(--ink);font-weight:500}
+.tag::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--hl);margin-right:10px;vertical-align:middle;box-shadow:0 0 0 2px #f1d54a}
+details{background:#fff;border:1px solid var(--line);border-radius:var(--r-md);padding:16px 20px;margin:0 auto 10px;max-width:760px}
+details[open]{border-color:var(--blue)}
+summary{cursor:pointer;font-weight:700;color:var(--ink);list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--blue);font-size:22px;line-height:1;transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
 details p{margin:10px 0 0;color:var(--muted)}
-label{display:block;font-weight:700;margin:14px 0 6px}
-input,textarea,select{width:100%;padding:12px 14px;border:1px solid #c4ccdb;border-radius:8px;font-size:17px;font-family:inherit;background:#fff}
-input:focus,textarea:focus,select:focus{outline:2px solid var(--blue);border-color:var(--blue)}
+label{display:block;font-weight:700;margin:16px 0 6px;color:var(--ink)}
+input,textarea,select{width:100%;padding:12px 14px;border:1px solid #c9d6cd;border-radius:var(--r-sm);font-size:17px;font-family:inherit;background:#fff;color:var(--text)}
+input[type=file]{background:var(--paper);border-style:dashed;padding:14px}
+input:focus,textarea:focus,select:focus{outline:3px solid rgba(42,122,90,.25);border-color:var(--blue)}
 textarea{min-height:120px;resize:vertical}
 .privacy{font-size:14px;color:var(--muted);margin:14px 0 0}
-footer{background:#14213d;color:#d7deee;padding:36px 0;text-align:center}
-footer a{color:#fff}
-@media(max-width:860px){
+footer{background:var(--ink);color:#cfe0d6;padding:40px 0;text-align:center}
+footer a{color:var(--hl)}
+footer .logo{justify-content:center;color:#fff}
+@media(max-width:900px){
  .steps{grid-template-columns:1fr 1fr}
+ .hero .wrap{grid-template-columns:1fr}
+ .sheets{max-width:460px;width:100%;margin:10px auto 0;height:360px}
 }
 @media(max-width:760px){
  body{font-size:16px}
  header nav a.link{display:none}
- .hero{padding:40px 0}.hero .wrap{grid-template-columns:1fr}
- .hero h1{font-size:30px}.hero p{font-size:18px}
+ .hero{padding:44px 0 56px}
+ .hero h1{font-size:31px}.hero p{font-size:17px}
  .cards,.two,.steps{grid-template-columns:1fr}
- section{padding:44px 0}h2{font-size:25px}
+ section{padding:52px 0}h2{font-size:26px}
+ #maker .box{padding:24px 18px}
+ .sheets{height:340px}.sheet .sticky{display:none}
 }
 </style>
 </head>
 <body>
-<header><div class="wrap"><a class="logo" href="#top">요약집생성</a>
+<header><div class="wrap"><a class="logo" href="#top"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="5" y="4" width="20" height="25" rx="3" fill="#fff" stroke="currentColor" stroke-width="2"/><rect x="5" y="4" width="5" height="25" rx="2" fill="#1a56db"/><path d="M14 12h7M14 17h7M14 22h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M13 16.5h9" stroke="#ffe36b" stroke-width="5" opacity=".8"/></svg>요약집생성</a>
  <nav><a class="link" href="#service">서비스</a><a class="link" href="#flow">사용 방법</a><a class="link" href="#sample">샘플</a><a class="link" href="#faq">자주 묻는 질문</a><a class="btn small" href="#maker">바로 만들기</a></nav>
 </div></header>
 
 <main id="top">
 <div class="hero"><div class="wrap">
  <div>
-  <h1>과정개요서만 넣으면<br>요약집과 과제 가이드를 만들어 줍니다</h1>
+  <h1>과정개요서만 넣으면<br><span class="mark">요약집과 과제 가이드</span>를<br>만들어 줍니다</h1>
   <p>평가 엑셀 하나로 시험 요약집, 과제요약집, 과제 가이드를 Word 파일로 바로 만들어 드립니다.</p>
   <div class="btns"><a class="btn" href="#maker">바로 만들기</a><a class="btn ghost" href="#sample">샘플 보기</a></div>
+  <ul class="facts"><li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>무료</li><li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>회원가입 없음</li><li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>파일은 내 화면에서만 처리</li></ul>
  </div>
- <div class="photo">사진 자리</div>
+ <div class="sheets" aria-hidden="true">
+  <div class="sheet back"></div>
+  <div class="sheet front">
+   <div class="ttl">생성형 AI 업무 활용_ 요약집</div>
+   <div class="h">■ 생성형 AI의 개념</div>
+   <ol><li>생성형 AI는 <b>새로운 콘텐츠를 만드는 AI</b>이다</li><li><span class="hl">프롬프트는 <b>AI에게 주는 지시문</b>이다</span></li></ol>
+   <div class="h">■ 프롬프트 작성 원칙</div>
+   <ol><li>좋은 프롬프트는 <b>목적과 조건이 분명한 지시</b>이다</li><li>결과물은 <b>사실 여부를 확인</b>해야 한다</li><li>개인정보는 <b>입력하지 않는다</b></li></ol>
+   <div class="sticky">엑셀 한 파일로<br>세 가지 문서</div>
+  </div>
+ </div>
 </div></div>
 
 <section id="service"><div class="wrap">
  <h2>만들 수 있는 문서</h2>
  <p class="sub">평가 엑셀(과정개요서) 하나로 세 가지 Word(.docx) 문서를 만듭니다</p>
  <div class="cards">
- <div class="card"><span class="tag2">시험 문항</span><h3>시험 요약집</h3>
+ <div class="card c1"><div class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="7" y="4" width="18" height="24" rx="3"/><path d="M11 11h10M11 16h10M11 21h6"/></svg></div><span class="tag2">시험 문항</span><h3>시험 요약집</h3>
   <p>시험 문항을 차시별로 정리해, 요약집만 봐도 정답을 고를 수 있게 만듭니다.</p>
   <ul>
    <li>문제와 정답을 "○○은 ○○이다" 한 문장으로 정리</li>
@@ -103,7 +191,7 @@ footer a{color:#fff}
    <li>정답 키워드는 굵은 파란색으로 표시</li>
   </ul>
   <div class="note">진행단계평가와 최종평가('2-1. 평가(시험)') 문항을 씁니다.</div></div>
- <div class="card"><span class="tag2">과제 문항</span><h3>과제요약집</h3>
+ <div class="card c2"><div class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="7" width="16" height="20" rx="3"/><path d="M11 4h13a3 3 0 0 1 3 3v16"/><path d="M9 13h8M9 18h8M9 23h5"/></svg></div><span class="tag2">과제 문항</span><h3>과제요약집</h3>
   <p>과제 문항마다 모범답안을 예시 여러 개(기본 20개)로 정리합니다.</p>
   <ul>
    <li>"정답 및 해설"의 모범답안 내용을 그대로 사용</li>
@@ -111,7 +199,7 @@ footer a{color:#fff}
    <li>문장 끝은 "~합니다/~입니다"로 통일</li>
   </ul>
   <div class="note">기본은 문장을 그대로 두고 모양만 바꿉니다. 예시 20개를 서로 다른 답으로 받으려면 문항별 "Claude에서 작성하기" 버튼을 누르면 됩니다.</div></div>
- <div class="card"><span class="tag2">과제 문항</span><h3>과제 가이드</h3>
+ <div class="card c3"><div class="ico"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6h20v16H14l-6 5v-5H6z"/><path d="M11 12h10M11 16h6"/></svg></div><span class="tag2">과제 문항</span><h3>과제 가이드</h3>
   <p>학습자가 AI로 과제를 하고 제출하는 방법을 단계별로 안내합니다.</p>
   <ul>
    <li>문항별 문제 원문을 상자에 담아 정리</li>
@@ -120,13 +208,13 @@ footer a{color:#fff}
   </ul>
   <div class="note">모범답안과 답안 예시는 넣지 않습니다.</div></div>
  </div>
- <p class="sub" style="margin:24px 0 0">세 문서 모두 자료에 없는 내용은 추가하지 않습니다.</p>
+ <p class="sub" style="margin:24px auto 0">세 문서 모두 자료에 없는 내용은 추가하지 않습니다.</p>
 </div></section>
 
 <section id="maker"><div class="wrap">
  <h2>바로 만들기</h2>
  <p class="sub">만들 문서를 고르고 과정개요서(엑셀)를 올리면 Word 파일을 만들어 드립니다. 파일은 서버로 보내지 않고 이 화면에서만 처리됩니다.</p>
- <div class="box" style="max-width:860px;margin:0 auto">
+ <div class="box">
   <label for="mkmode" style="margin-top:0">만들 문서</label>
   <select id="mkmode">
    <option value="exam">시험 요약집 (진행단계평가 + 최종평가)</option>
@@ -220,7 +308,7 @@ footer a{color:#fff}
   <div class="card"><h3>과제요약집 샘플</h3><p>모범답안을 예시마다 다른 목록 모양으로 정리한 과제요약집입니다. (예시 5개)</p><p style="margin-top:14px"><a class="btn small" href="samples/sample-book.pdf" download>샘플 내려받기</a></p></div>
   <div class="card"><h3>과제 가이드 샘플</h3><p>문제 상자와 작성방법 단계를 담은 과제 가이드입니다. (캡처 없이 만든 모습)</p><p style="margin-top:14px"><a class="btn small" href="samples/sample-guide.pdf" download>샘플 내려받기</a></p></div>
  </div>
- <p class="sub" style="margin:24px 0 0">과제요약집과 과제 가이드 샘플은 예시용으로 지어낸 가상 과정으로 만들었습니다.</p>
+ <p class="sub" style="margin:24px auto 0">과제요약집과 과제 가이드 샘플은 예시용으로 지어낸 가상 과정으로 만들었습니다.</p>
 </div></section>
 
 <section><div class="wrap">
@@ -248,7 +336,7 @@ footer a{color:#fff}
 </main>
 
 <footer><div class="wrap">
- <p><strong>요약집생성</strong></p>
+ <p class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="5" y="4" width="20" height="25" rx="3" fill="#fff" stroke="currentColor" stroke-width="2"/><rect x="5" y="4" width="5" height="25" rx="2" fill="#1a56db"/><path d="M14 12h7M14 17h7M14 22h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M13 16.5h9" stroke="#ffe36b" stroke-width="5" opacity=".8"/></svg>요약집생성</p>
  <p>문의 <a href="mailto:peech1996@gmail.com">peech1996@gmail.com</a></p>
 </div></footer>
 
