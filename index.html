@@ -7,7 +7,7 @@
 <meta name="description" content="평가 엑셀(과정개요서)을 올리면 시험 요약집, 과제요약집, 과제 가이드를 Word 파일로 바로 만들어 드립니다.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&display=swap" rel="stylesheet">
 <style>
 /* 따뜻한 교육기관 톤: 하늘색 + 형광펜 노랑 + 공책 종이, 캐릭터 요약이·연필이 */
 :root{
@@ -26,8 +26,9 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
-body{margin:0;font-family:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;color:var(--text);background:var(--bg);line-height:1.75;font-size:17px;word-break:keep-all}
-h1,h2,h3,.logo{font-family:"Gowun Dodum","Noto Sans KR",sans-serif;font-weight:400;letter-spacing:-.01em}
+body{margin:0;font-family:"Gowun Dodum","Malgun Gothic","Apple SD Gothic Neo",sans-serif;color:var(--text);background:var(--bg);line-height:1.75;font-size:17px;word-break:keep-all}
+h1,h2,h3,.logo,.btn,label,summary,.tag,.card .tag2,.bubble,.sheet .sticky,.step::before{font-family:"Jua","Gowun Dodum",sans-serif;font-weight:400;letter-spacing:0}
+b,strong{font-weight:700}
 a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--hl);outline-offset:2px;border-radius:6px}
 .wrap{max-width:1060px;margin:0 auto;padding:0 20px}
 
@@ -70,7 +71,7 @@ header nav a.link:hover{color:var(--ink)}
 .sheet li{margin:3px 0}
 .sheet b{color:var(--word)}
 .sheet .hl{background:linear-gradient(transparent 50%,var(--hl) 50%);}
-.sheet .sticky{position:absolute;right:-26px;bottom:-14px;background:var(--hl);color:var(--ink);font-family:"Gowun Dodum",sans-serif;font-size:15px;padding:12px 14px;transform:rotate(4deg);box-shadow:0 8px 16px -10px rgba(0,0,0,.4);line-height:1.4}
+.sheet .sticky{position:absolute;right:-26px;bottom:-14px;background:var(--hl);color:var(--ink);font-family:"Jua",sans-serif;font-size:15px;padding:12px 14px;transform:rotate(4deg);box-shadow:0 8px 16px -10px rgba(0,0,0,.4);line-height:1.4}
 
 section{padding:76px 0;scroll-margin-top:64px}
 h2{font-size:33px;margin:0 0 10px;text-align:center;color:var(--ink)}
@@ -103,7 +104,7 @@ h2{font-size:33px;margin:0 0 10px;text-align:center;color:var(--ink)}
 
 .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;counter-reset:s;position:relative}
 .step{background:#fff;border:1px solid var(--line);border-radius:var(--r-md);padding:24px 22px;position:relative}
-.step::before{counter-increment:s;content:counter(s);display:inline-flex;width:40px;height:40px;border-radius:50%;background:var(--sky);color:var(--ink);align-items:center;justify-content:center;font-weight:700;font-family:"Gowun Dodum",sans-serif;font-size:19px;margin-bottom:10px}
+.step::before{counter-increment:s;content:counter(s);display:inline-flex;width:40px;height:40px;border-radius:50%;background:var(--sky);color:var(--ink);align-items:center;justify-content:center;font-weight:700;font-family:"Jua",sans-serif;font-size:19px;margin-bottom:10px}
 .step h3{margin:0 0 6px;font-size:20px;color:var(--ink)}
 .step p{margin:0;color:var(--muted);font-size:15.5px}
 .alt{background:var(--paper)}
@@ -165,7 +166,7 @@ footer .logo{justify-content:center;color:#fff}
 .sec-head.side{flex-direction:row;justify-content:center;gap:14px}
 .sec-head.side .mascot{margin:0}
 #maker .box .m-peek{position:absolute;right:28px;top:-74px;width:96px}
-.bubble{position:relative;background:#fff;border:2px solid var(--ink);border-radius:16px;padding:6px 14px;font-family:"Gowun Dodum",sans-serif;color:var(--ink);font-size:16px;white-space:nowrap}
+.bubble{position:relative;background:#fff;border:2px solid var(--ink);border-radius:16px;padding:6px 14px;font-family:"Jua",sans-serif;color:var(--ink);font-size:16px;white-space:nowrap}
 .bubble::after{content:"";position:absolute;left:-9px;top:50%;width:12px;height:12px;background:#fff;border-left:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:translateY(-50%) rotate(45deg)}
 .faq-head{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:6px}
 .faq-head .mascot{width:70px}
