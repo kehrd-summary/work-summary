@@ -51,6 +51,7 @@ header nav a.link:hover{color:var(--ink)}
  background-image:linear-gradient(var(--line) 1px,transparent 1px);background-size:100% 34px;background-position:0 18px}
 .hero .wrap{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
 .hero h1{font-size:44px;line-height:1.35;margin:0 0 18px;color:var(--ink)}
+@media(min-width:761px){.hero h1 .nw{white-space:nowrap}}
 .hero h1 .mark{background:linear-gradient(transparent 58%,var(--hl) 58%,var(--hl) 92%,transparent 92%);padding:0 4px}
 .hero p{font-size:19px;color:var(--muted);margin:0 0 30px;max-width:30em}
 .hero .btns{display:flex;gap:12px;flex-wrap:wrap}
@@ -239,7 +240,7 @@ footer .pals .mascot{width:46px}
 <main id="top">
 <div class="hero"><div class="wrap">
  <div>
-  <h1>과정개요서만 넣으면<br><span style="white-space:nowrap"><span class="mark">요약집과 과제가이드(실습형)</span>를</span><br>만들어 줍니다</h1>
+  <h1>과정개요서만 넣으면<br><span class="nw"><span class="mark">요약집과 과제가이드(실습형)</span>를</span><br>만들어 줍니다</h1>
   <p>평가 엑셀 하나로 시험 요약집, 과제요약집, 과제가이드(실습형)를 Word 파일로 바로 만들어 드립니다.</p>
   <div class="btns"><a class="btn" href="#maker">바로 만들기</a><a class="btn ghost" href="#sample">샘플 보기</a></div>
   <ul class="facts"><li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>무료</li><li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>회원가입 없음</li><li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>파일은 내 화면에서만 처리</li></ul>
